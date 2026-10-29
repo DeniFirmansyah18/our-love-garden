@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Our Love Garden">
+  <defs>
+    <linearGradient id="bgm" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFF6E9" />
+      <stop offset="1" stop-color="#FBE0E6" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bgm)" />
+  <g transform="translate(256 264) scale(0.74) translate(-256 -264)">
+    <circle cx="194" cy="196" r="34" fill="#4A1F1A" />
+    <circle cx="318" cy="196" r="34" fill="#4A1F1A" />
+    <circle cx="256" cy="252" r="104" fill="#FFFFFF" />
+    <circle cx="216" cy="250" r="17" fill="#3B1A15" />
+    <circle cx="296" cy="250" r="17" fill="#3B1A15" />
+    <circle cx="216" cy="245" r="5" fill="#FFF6E9" />
+    <circle cx="296" cy="245" r="5" fill="#FFF6E9" />
+    <ellipse cx="172" cy="294" rx="26" ry="17" fill="#F7B5B0" />
+    <ellipse cx="340" cy="294" rx="26" ry="17" fill="#F7B5B0" />
+    <path d="M240 296q16 20 32 0" stroke="#3B1A15" stroke-width="8" fill="none" stroke-linecap="round" />
+    <path d="M256 424c-28-20-46-35-46-54a18 18 0 0 1 33-10 18 18 0 0 1 33 10c0 19-18 34-46 54z" fill="#EA8FA6" />
+  </g>
+</svg>

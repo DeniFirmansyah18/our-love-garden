@@ -1,0 +1,23 @@
+{
+  "name": "our-love-garden",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A tiny cozy 3D island for Bubu & Dudu.",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/three": "^0.170.0",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  }
+}

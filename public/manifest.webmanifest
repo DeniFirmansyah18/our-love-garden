@@ -1,0 +1,27 @@
+{
+  "name": "Our Love Garden",
+  "short_name": "Love Garden",
+  "description": "Pulau kecil untuk Bubu & Dudu: bertani, memelihara hewan, memancing, dan membuka kenangan.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFF3E4",
+  "theme_color": "#FFF3E4",
+  "orientation": "any",
+  "lang": "id",
+  "categories": ["games", "lifestyle"],
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
