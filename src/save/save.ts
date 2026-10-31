@@ -7,9 +7,10 @@ import {
 } from '../data/config';
 import type { BubuAccessory, DuduAccessory, Lang, Quality, RibbonId } from '../data/config';
 import { DEFAULT_SOUND, sanitizeSound, type SoundSettings } from '../audio/settings';
+import { DECOR_SLOTS, defaultDecor, isDecorId, type DecorPlacement, type DecorState } from '../data/decor';
 
 export const SAVE_KEY = 'our-love-garden:save';
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 7;
 export const PLOT_COUNT = 9;
 export const STARTING_COINS = 60;
 
@@ -42,10 +43,24 @@ export interface Progress {
     animals: string[];
   };
   animalNames: Record<string, string>;
-  memories: string[];
+    /** Closeness per animal, 0..100. Drives tricks and little gifts. */
+    animalAffection: Record<string, number>;
+    memories: string[];
     finaleSeen: boolean;
     birthdaySeen: string[];
-  }
+    visitedZones: string[];
+    discoveredSpots: string[];
+    /** Owned furniture plus what stands in each yard slot. */
+    decor: DecorState;
+    fishRecords: {
+      totalCatches: number;
+      largestCm: number;
+    };
+    /** Per-fish catch count drives the 3-slot recollect badge. */
+    fishBadges: Record<string, number>;
+        /** Favourite item ids already handed to Dudu (drives his first-time reply). */
+        giftedFavorites: string[];
+      }
 
 export interface SaveState {
   version: number;
@@ -98,10 +113,17 @@ export function defaultProgress(now = 0): Progress {
       animals: ['cimoy', 'jamal', 'anak-ayam']
     },
     animalNames: { ...DEFAULT_ANIMAL_NAMES },
-        memories: [],
+            animalAffection: {},
+            memories: [],
         finaleSeen: false,
-        birthdaySeen: []
-      };
+        birthdaySeen: [],
+        visitedZones: ['garden', 'home'],
+        discoveredSpots: [],
+        decor: defaultDecor(),
+        fishRecords: { totalCatches: 0, largestCm: 0 },
+                fishBadges: {},
+                giftedFavorites: []
+              };
 }
 
 export function defaultSave(now = 0): SaveState {
@@ -145,6 +167,73 @@ function sanitizeStringList(value: unknown, allowed?: string[]): string[] {
   return [...seen];
 }
 
+function sanitizeFishRecords(raw: unknown): { totalCatches: number; largestCm: number } {
+  if (!isRecord(raw)) return { totalCatches: 0, largestCm: 0 };
+  return {
+    totalCatches: Math.max(0, Math.round(toNumber(raw.totalCatches, 0))),
+    largestCm: Math.max(0, toNumber(raw.largestCm, 0))
+  };
+}
+
+function sanitizeFishBadges(raw: unknown): Record<string, number> {
+  if (!isRecord(raw)) return {};
+  const badges: Record<string, number> = {};
+  for (const [key, value] of Object.entries(raw)) {
+    if (typeof value !== 'number' || !Number.isFinite(value)) continue;
+    const count = Math.max(0, Math.floor(value));
+    if (count > 0) badges[key] = count;
+  }
+  return badges;
+}
+
+function sanitizeDecor(raw: unknown, photoCount?: number): DecorState {
+  const safe = defaultDecor();
+  if (!isRecord(raw)) return safe;
+
+  const owned: string[] = [];
+  if (Array.isArray(raw.owned)) {
+    for (const entry of raw.owned) {
+      if (isDecorId(entry) && !owned.includes(entry)) owned.push(entry);
+    }
+  }
+  // The starter set can never be lost, otherwise the yard would end up empty.
+  for (const id of safe.owned) {
+    if (!owned.includes(id)) owned.push(id);
+  }
+
+  const slots = new Map<number, DecorPlacement>();
+  if (Array.isArray(raw.placed)) {
+    for (const entry of raw.placed) {
+      if (!isRecord(entry)) continue;
+      if (typeof entry.slot !== 'number' || !Number.isInteger(entry.slot)) continue;
+      if (entry.slot < 0 || entry.slot >= DECOR_SLOTS.length) continue;
+      if (!isDecorId(entry.item) || !owned.includes(entry.item)) continue;
+      // One item per slot: the first placement of a slot wins.
+      if (slots.has(entry.slot)) continue;
+      const photo =
+        typeof entry.photo === 'number' && Number.isFinite(entry.photo)
+          ? Math.max(0, Math.min(photoCount ? photoCount - 1 : 31, Math.round(entry.photo)))
+          : 0;
+      const fish = typeof entry.fish === 'string' && entry.fish.length > 0 ? entry.fish : null;
+      slots.set(entry.slot, { slot: entry.slot, item: entry.item, photo, fish });
+    }
+  }
+
+  return { owned, placed: [...slots.values()].sort((a, b) => a.slot - b.slot) };
+}
+
+export interface KnownIds {
+  crops: string[];
+  fish: string[];
+  animals: string[];
+  memories?: string[];
+  zones?: string[];
+  spots?: string[];
+  gifts?: string[];
+  /** How many photos live in /public/photos; frames clamp to this range. */
+  photos?: number;
+}
+
 /**
  * Turns anything read from disk into a valid save. Unknown or corrupt fields
  * fall back to defaults instead of breaking the game.
@@ -152,7 +241,7 @@ function sanitizeStringList(value: unknown, allowed?: string[]): string[] {
 export function sanitizeSave(
   raw: unknown,
   now = Date.now(),
-  knownIds?: { crops: string[]; fish: string[]; animals: string[]; memories?: string[] }
+  knownIds?: KnownIds
 ): SaveState {
   const safe = defaultSave(now);
   if (!isRecord(raw)) return safe;
@@ -217,9 +306,29 @@ export function sanitizeSave(
     safe.progress.animalNames = names;
   }
 
+    if (isRecord(progress.animalAffection)) {
+      const affection: Record<string, number> = {};
+      for (const [key, value] of Object.entries(progress.animalAffection)) {
+        if (typeof value !== 'number' || !Number.isFinite(value)) continue;
+        affection[key] = Math.max(0, Math.min(100, Math.round(value)));
+      }
+      safe.progress.animalAffection = affection;
+    }
+
   safe.progress.memories = sanitizeStringList(progress.memories, knownIds?.memories);
     safe.progress.finaleSeen = progress.finaleSeen === true;
     safe.progress.birthdaySeen = sanitizeStringList(progress.birthdaySeen);
+
+    safe.progress.visitedZones = sanitizeStringList(progress.visitedZones, knownIds?.zones);
+    if (safe.progress.visitedZones.length === 0) {
+      safe.progress.visitedZones = ['garden', 'home'];
+    }
+    safe.progress.discoveredSpots = sanitizeStringList(progress.discoveredSpots, knownIds?.spots);
+    safe.progress.decor = sanitizeDecor(progress.decor, knownIds?.photos);
+
+    safe.progress.fishRecords = sanitizeFishRecords(progress.fishRecords);
+    safe.progress.fishBadges = sanitizeFishBadges(progress.fishBadges);
+        safe.progress.giftedFavorites = sanitizeStringList(progress.giftedFavorites, knownIds?.gifts);
 
     return safe;
   }
@@ -227,7 +336,7 @@ export function sanitizeSave(
 export function parseSave(
   text: string | null,
   now = Date.now(),
-  knownIds?: { crops: string[]; fish: string[]; animals: string[]; memories?: string[] }
+  knownIds?: KnownIds
 ): SaveState {
   if (!text) return defaultSave(now);
   try {
@@ -241,7 +350,7 @@ export function loadSave(
   storage?: StorageLike,
   options: {
     now?: number;
-      knownIds?: { crops: string[]; fish: string[]; animals: string[]; memories?: string[] };
+      knownIds?: KnownIds;
   } = {}
 ): SaveState {
   const target = storage ?? safeStorage();

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { cropById } from '../data/crops';
+import { cropById, type CropKind, type CropShape } from '../data/crops';
 import { isReady, needsWater, progressOf } from '../systems/farming';
 import type { PlotState } from '../save/save';
 import { outlined, toonMaterial } from '../entities/toon';
@@ -168,59 +168,181 @@ export function buildCropVisual(cropId: string, stage: number, stages: number): 
     return group;
   }
 
-  if (crop.kind === 'flower') {
-    const petalGeometry = new THREE.SphereGeometry(0.062, 9, 7);
-    const bloom = new THREE.Group();
-    for (let i = 0; i < 6; i += 1) {
-      const angle = (i / 6) * Math.PI * 2;
-      const petal = new THREE.Mesh(petalGeometry, toonMaterial(crop.bloomColor));
-      petal.position.set(Math.cos(angle) * 0.06, Math.sin(angle) * 0.06, 0);
-      petal.scale.set(1, 1, 0.6);
-      bloom.add(petal);
-    }
-    const center = new THREE.Mesh(
-      new THREE.SphereGeometry(0.045, 8, 6),
-      toonMaterial(0xf7d59a)
-    );
-    center.position.z = 0.03;
-    bloom.add(center);
-    bloom.position.y = stemHeight + 0.06;
-    bloom.rotation.x = -Math.PI / 2.4;
-    group.add(bloom);
-  } else if (crop.kind === 'fruit') {
-    for (let i = 0; i < 3; i += 1) {
-      const fruit = new THREE.Mesh(
-        new THREE.SphereGeometry(0.07, 10, 8),
-        toonMaterial(crop.bloomColor)
-      );
-      const angle = (i / 3) * Math.PI * 2;
-      fruit.position.set(Math.cos(angle) * 0.08, 0.2 + i * 0.06, Math.sin(angle) * 0.08);
-      fruit.scale.set(1, 1.15, 1);
-      group.add(fruit);
-    }
-  } else {
-    const carrot = new THREE.Mesh(
-      new THREE.ConeGeometry(0.08, 0.26, 8),
-      toonMaterial(crop.bloomColor)
-    );
-    carrot.position.y = 0.16;
-    carrot.rotation.x = Math.PI;
-    group.add(carrot);
-    for (let i = 0; i < 3; i += 1) {
-      const top = new THREE.Mesh(
-        new THREE.ConeGeometry(0.035, 0.2, 5),
-        toonMaterial(crop.leafColor)
-      );
-      const angle = (i / 3) * Math.PI * 2;
-      top.position.set(Math.cos(angle) * 0.05, stemHeight + 0.06, Math.sin(angle) * 0.05);
-      top.rotation.z = Math.cos(angle) * 0.4;
-      top.rotation.x = Math.sin(angle) * 0.4;
-      group.add(top);
-    }
+  const shape = crop.shape ?? defaultShape(crop.kind);
+    group.add(buildRipe(shape, crop.bloomColor, crop.leafColor, stemHeight));
+
+    return group;
   }
 
-  return group;
-}
+  function defaultShape(kind: CropKind): CropShape {
+    if (kind === 'flower') return 'bloom';
+    if (kind === 'fruit') return 'berry';
+    return 'carrot';
+  }
+
+  function buildRipe(shape: CropShape, color: number, leaf: number, topY: number): THREE.Group {
+    const g = new THREE.Group();
+    g.position.y = topY;
+
+    switch (shape) {
+      case 'bloom': {
+        const petalGeometry = new THREE.SphereGeometry(0.062, 9, 7);
+        for (let i = 0; i < 6; i += 1) {
+          const angle = (i / 6) * Math.PI * 2;
+          const petal = new THREE.Mesh(petalGeometry, toonMaterial(color));
+          petal.position.set(Math.cos(angle) * 0.06, Math.sin(angle) * 0.06, 0);
+          petal.scale.set(1, 1, 0.6);
+          g.add(petal);
+        }
+        const center = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), toonMaterial(0xf7d59a));
+        center.position.z = 0.03;
+        g.add(center);
+        g.rotation.x = -Math.PI / 2.4;
+        break;
+      }
+      case 'tulip': {
+        const cup = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), toonMaterial(color));
+        cup.scale.set(1, 1.25, 1);
+        cup.position.y = 0.03;
+        g.add(cup);
+        const tip = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.08, 8), toonMaterial(color));
+        tip.position.set(0, 0.16, 0.02);
+        g.add(tip);
+        break;
+      }
+      case 'spike': {
+        for (let i = 0; i < 4; i += 1) {
+          const bud = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 6), toonMaterial(color));
+          bud.position.y = i * 0.06;
+          bud.scale.set(1, 1.2, 1);
+          g.add(bud);
+        }
+        break;
+      }
+      case 'puff': {
+        for (const [x, y, z] of [
+          [-0.05, 0, 0],
+          [0.05, 0, 0],
+          [0, 0, -0.05],
+          [0, 0, 0.05],
+          [0, 0.055, 0]
+        ] as const) {
+          const puff = new THREE.Mesh(new THREE.SphereGeometry(0.055, 10, 8), toonMaterial(color));
+          puff.position.set(x, y, z);
+          g.add(puff);
+        }
+        break;
+      }
+      case 'berry': {
+        for (let i = 0; i < 3; i += 1) {
+          const berry = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), toonMaterial(color));
+          const angle = (i / 3) * Math.PI * 2;
+          berry.position.set(Math.cos(angle) * 0.08, 0.06 + i * 0.02, Math.sin(angle) * 0.08);
+          berry.scale.set(1, 1.15, 1);
+          g.add(berry);
+        }
+        break;
+      }
+      case 'melon': {
+        const melon = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 10), toonMaterial(color));
+        melon.scale.set(1, 1.05, 1.1);
+        melon.position.y = -0.04;
+        g.add(melon);
+        break;
+      }
+      case 'apple': {
+        const apple = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 10), toonMaterial(color));
+        apple.position.y = 0.01;
+        g.add(apple);
+        const stemTip = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.09, 5), toonMaterial(leaf));
+        stemTip.position.y = 0.12;
+        g.add(stemTip);
+        break;
+      }
+      case 'grapes': {
+        for (let row = 0; row < 3; row += 1) {
+          const n = 3 - row;
+          for (let i = 0; i < n; i += 1) {
+            const grape = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), toonMaterial(color));
+            grape.position.set((i - (n - 1) / 2) * 0.1, -row * 0.08, 0);
+            g.add(grape);
+          }
+        }
+        break;
+      }
+      case 'peach': {
+        const peach = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 10), toonMaterial(color));
+        peach.scale.set(1, 1.1, 0.95);
+        peach.position.y = 0.01;
+        g.add(peach);
+        const crease = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.06, 0.16, 6), toonMaterial(0xf2c1b0));
+        crease.position.y = 0.02;
+        g.add(crease);
+        break;
+      }
+      case 'carrot': {
+        const carrot = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.26, 8), toonMaterial(color));
+        carrot.position.y = -0.1;
+        carrot.rotation.x = Math.PI;
+        g.add(carrot);
+        for (let i = 0; i < 3; i += 1) {
+          const top = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.18, 5), toonMaterial(leaf));
+          const angle = (i / 3) * Math.PI * 2;
+          top.position.set(Math.cos(angle) * 0.05, 0.06, Math.sin(angle) * 0.05);
+          top.rotation.z = Math.cos(angle) * 0.4;
+          top.rotation.x = Math.sin(angle) * 0.4;
+          g.add(top);
+        }
+        break;
+      }
+      case 'tomato': {
+        for (let i = 0; i < 3; i += 1) {
+          const tomato = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8), toonMaterial(color));
+          const angle = (i / 3) * Math.PI * 2;
+          tomato.position.set(Math.cos(angle) * 0.07, 0.02 + i * 0.03, Math.sin(angle) * 0.07);
+          g.add(tomato);
+        }
+        break;
+      }
+      case 'cob': {
+        const cob = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.07, 0.22, 8), toonMaterial(color));
+        cob.position.y = 0;
+        g.add(cob);
+        for (let i = 0; i < 3; i += 1) {
+          const husk = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.26, 5), toonMaterial(leaf));
+          const angle = (i / 3) * Math.PI * 2;
+          husk.position.set(Math.cos(angle) * 0.1, -0.05, Math.sin(angle) * 0.1);
+          husk.rotation.z = Math.cos(angle) * 0.7;
+          g.add(husk);
+        }
+        break;
+      }
+      case 'eggplant': {
+        const fruit = new THREE.Mesh(new THREE.SphereGeometry(0.055, 10, 8), toonMaterial(color));
+        fruit.scale.set(1, 1.4, 1);
+        fruit.position.y = -0.04;
+        g.add(fruit);
+        const calyx = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.08, 5), toonMaterial(leaf));
+        calyx.position.y = 0.1;
+        g.add(calyx);
+        break;
+      }
+      case 'leafy': {
+        for (let i = 0; i < 5; i += 1) {
+          const leafMesh = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), toonMaterial(color));
+          const angle = (i / 5) * Math.PI * 2;
+          leafMesh.position.set(Math.cos(angle) * 0.08, 0.02, Math.sin(angle) * 0.08);
+          leafMesh.scale.set(1.6, 0.5, 0.7);
+          leafMesh.rotation.y = angle;
+          leafMesh.rotation.z = 0.6;
+          g.add(leafMesh);
+        }
+        break;
+      }
+    }
+
+    return g;
+  }
 
 function disposeGroup(group: THREE.Object3D): void {
   group.traverse((child) => {

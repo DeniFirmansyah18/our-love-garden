@@ -16,7 +16,8 @@ export interface HudHandlers {
   onRestart: () => void;
   onReset: () => void;
   onJournal: () => void;
-  onVolume: (volume: number) => void;
+    onMap: () => void;
+    onVolume: (volume: number) => void;
   onToggleMusic: () => void;
   onToggleSfx: () => void;
   onSheetToggle: (open: boolean) => void;
@@ -57,6 +58,7 @@ export class Hud {
     private armedReset = false;
   private readonly settingsButton: HTMLButtonElement;
     private readonly journalButton: HTMLButtonElement;
+    private readonly mapButton: HTMLButtonElement;
     private readonly coinChip: HTMLSpanElement;
 
   constructor(handlers: HudHandlers, quality: Quality, sound: SoundSettings) {
@@ -107,6 +109,16 @@ export class Hud {
           html: `${icon('coin', 14)}<span>0</span>`
         });
 
+        this.mapButton = el(
+          'button',
+          {
+            className: 'icon-btn',
+            attrs: { type: 'button', 'aria-label': t('hud.map') },
+            on: { click: () => this.handlers.onMap() }
+          },
+          [el('span', { html: icon('globe', 19) })]
+        );
+
         this.element.append(
           el('div', { className: 'hud__top' }, [
             el('div', { className: 'hud__brand' }, [
@@ -115,6 +127,7 @@ export class Hud {
             ]),
             el('div', { className: 'hud__tools' }, [
               this.coinChip,
+              this.mapButton,
               this.journalButton,
               this.settingsButton
             ])
@@ -136,6 +149,7 @@ export class Hud {
       }
       this.settingsButton.setAttribute('aria-label', t('hud.settings'));
             this.journalButton.setAttribute('aria-label', t('hud.journal'));
+      this.mapButton.setAttribute('aria-label', t('hud.map'));
             this.renderEmotes();
             this.renderSettings();
           });

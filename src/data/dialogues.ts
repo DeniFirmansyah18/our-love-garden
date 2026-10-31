@@ -120,6 +120,42 @@ export const DUDU_SLEEP: LocalizedText[] = [
   }
 ];
 
+export const DUDU_GIFT_FAVORITE: LocalizedText[] = [
+  {
+    id: 'Ini... kesukaanku. Kamu ingat? Pipiku panas sekarang, adek ihankuu.',
+    en: 'This... is my favourite. You remembered? My cheeks are hot now, adek ihankuu.'
+  },
+  {
+    id: 'Kamu ngasih yang paling aku suka. Aku nggak akan jual ini, seumur hidup.',
+    en: 'You gave me my favourite. I will never sell this, not ever.'
+  }
+];
+
+export const DUDU_GIFT_FIRST_FAVORITE: LocalizedText[] = [
+  {
+    id: 'Pertama kalinya kamu kasih ini buat aku. Aku simpen di tempat paling aman: di hati.',
+    en: 'The first time you gave this to me. I will keep it in the safest place: my heart.'
+  }
+];
+
+export const DUDU_GIFT_REGULAR: LocalizedText[] = [
+  {
+    id: 'Ini buat aku? Beneran? Oke, sekarang ini barang paling berharga di pulau.',
+    en: 'This is for me? Really? Okay, this is now the most precious thing on the island.'
+  },
+  {
+    id: 'Aku taruh di dekat tempat tidur biar tiap bangun ingetnya sama kamu.',
+    en: 'I will put it near the bed so I remember you every time I wake up.'
+  }
+];
+
+export const BUBU_GIFT_THANKS: LocalizedText[] = [
+  {
+    id: 'Mas denikuu, makasih! Aku sayang banget, sampai aku nggak tahu gimana cara mejahit rasanya.',
+    en: 'Mas denikuu, thank you! I love it so much I do not know how to sew the feeling.'
+  }
+];
+
 export const EMOTE_REACTIONS: Record<string, LocalizedText> = {
   happy: {
     id: 'Adek ihankuu senyum. Aku ikut senyum, nggak bisa nolak.',

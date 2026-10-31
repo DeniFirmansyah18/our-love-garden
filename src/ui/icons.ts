@@ -35,7 +35,9 @@ export type IconName =
     | 'water'
     | 'basket'
     | 'cart'
-    | 'check';
+        | 'check'
+            | 'gift'
+            | 'home';
 
 const PATHS: Record<IconName, string> = {
   settings:
@@ -82,8 +84,10 @@ const PATHS: Record<IconName, string> = {
   water: '<path d="M12 3.4c3.4 4.4 5.6 7.4 5.6 10.2A5.6 5.6 0 0 1 12 19.4a5.6 5.6 0 0 1-5.6-5.8c0-2.8 2.2-5.8 5.6-10.2z"/>',
   basket: '<path d="M4.4 9.6h15.2l-1.6 8.2a2 2 0 0 1-2 1.6H8a2 2 0 0 1-2-1.6z"/><path d="M8.6 9.6l1.2-4.4M15.4 9.6l-1.2-4.4M4.4 13.2h15.2"/>',
   cart: '<circle cx="9.2" cy="18.4" r="1.6"/><circle cx="17.2" cy="18.4" r="1.6"/><path d="M3.4 4.6h2.2l2.4 9.6h9.6l2-6.4H6.2"/>',
-  check: '<path d="M5.2 12.6l4.4 4.4 9.2-9.6"/>'
-};
+    check: '<path d="M5.2 12.6l4.4 4.4 9.2-9.6"/>',
+        gift: '<rect x="3.6" y="8.4" width="16.8" height="11.8" rx="1.8"/><path d="M3.6 11.4h16.8"/><path d="M12 8.4v11.8"/><path d="M12 8.4c-2.4-2.2-5.4-.4-5.4 1.2 0 1.3 1.4 2.1 3.6 1.4"/><path d="M12 8.4c2.4-2.2 5.4-.4 5.4 1.2 0 1.3-1.4 2.1-3.6 1.4"/>',
+        home: '<path d="M4.6 11.2 12 4.8l7.4 6.4"/><path d="M6.4 9.8v9.4h11.2V9.8"/><path d="M10 19.2v-5.4h4v5.4"/>'
+    };
 
 export function icon(name: IconName, size = 20): string {
   return `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${PATHS[name]}</svg>`;

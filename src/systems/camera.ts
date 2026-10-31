@@ -21,7 +21,7 @@ export class CameraRig {
   private reducedMotion = false;
 
   constructor(aspect: number) {
-    this.camera = new THREE.PerspectiveCamera(46, aspect, 0.1, 220);
+    this.camera = new THREE.PerspectiveCamera(46, aspect, 0.1, 340);
     this.camera.position.set(6, 7, 12);
     this.reducedMotion =
       typeof window !== 'undefined' &&
@@ -57,10 +57,10 @@ export class CameraRig {
       const shortScreen =
         typeof window !== 'undefined' && window.innerHeight < 640 && this.portrait;
       if (this.mode === 'showcase') {
-        this.distance = this.portrait ? (shortScreen ? 10.2 : 8.4) : 7;
+        this.distance = this.portrait ? (shortScreen ? 10.2 : 8.8) : 7.4;
         this.pitch = 0.52;
       } else {
-        this.distance = this.portrait ? 12.2 : 11;
+        this.distance = this.portrait ? 12.6 : 12.2;
         this.pitch = 0.66;
       }
     }

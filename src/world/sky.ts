@@ -179,7 +179,7 @@ export class SkySystem {
   private readonly stars: THREE.Points;
     private starMaterial!: THREE.PointsMaterial;
   private readonly clouds: Array<{ group: THREE.Group; speed: number; drift: number }> = [];
-  private readonly fog = new THREE.Fog(0xf3e2cf, 26, 74);
+  private readonly fog = new THREE.Fog(0xf3e2cf, 45, 130);
   private readonly sunPosition = new THREE.Vector3();
   private readonly moonPosition = new THREE.Vector3();
   private readonly palette = {
@@ -264,10 +264,10 @@ export class SkySystem {
     this.sunLight = new THREE.DirectionalLight(0xfff1d8, 1.9);
     this.sunLight.castShadow = true;
     this.sunLight.shadow.mapSize.set(1024, 1024);
-    this.sunLight.shadow.camera.left = -18;
-    this.sunLight.shadow.camera.right = 18;
-    this.sunLight.shadow.camera.top = 18;
-    this.sunLight.shadow.camera.bottom = -18;
+    this.sunLight.shadow.camera.left = -22;
+        this.sunLight.shadow.camera.right = 22;
+        this.sunLight.shadow.camera.top = 22;
+        this.sunLight.shadow.camera.bottom = -22;
     this.sunLight.shadow.camera.near = 1;
     this.sunLight.shadow.camera.far = 80;
     this.sunLight.shadow.bias = -0.0012;
@@ -337,7 +337,7 @@ export class SkySystem {
     return { group };
   }
 
-  update(dt: number, time01: number, cameraPosition: THREE.Vector3): void {
+  update(dt: number, time01: number, cameraPosition: THREE.Vector3, focus?: THREE.Vector3): void {
     this.samplePalette(time01);
 
     this.uniforms.topColor.value.copy(this.palette.top);
@@ -360,9 +360,16 @@ export class SkySystem {
     const daylight = THREE.MathUtils.clamp(Math.sin(sunAngle) * 1.6 + 0.25, 0, 1);
     this.uniforms.sunGlow.value = 0.22 + daylight * 0.78;
 
-    this.sunLight.position.copy(this.sunPosition).multiplyScalar(0.55);
-        if (this.sunLight.position.y < 3) this.sunLight.position.y = 3;
-        this.moonLight.position.copy(this.moonPosition).multiplyScalar(0.55);
+        // Shadows follow the player so a 34-unit island keeps a crisp shadow map.
+        const focusPoint = focus ?? this.sunLight.target.position;
+        this.sunLight.target.position.copy(focusPoint);
+        this.sunLight.target.updateMatrixWorld();
+        this.sunLight.position
+          .copy(focusPoint)
+          .addScaledVector(this.uniforms.sunDirection.value, 60);
+        this.moonLight.position
+          .copy(focusPoint)
+          .addScaledVector(this.moonPosition.clone().normalize(), 60);
 
         const key = this.sampleKey(time01);
         this.sunLight.color.copy(this.palette.sun);

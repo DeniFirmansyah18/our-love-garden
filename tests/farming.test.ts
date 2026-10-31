@@ -12,11 +12,38 @@ import {
   stageOf,
   waterPlot
 } from '../src/systems/farming';
-import { cropById } from '../src/data/crops';
+import { cropById, CROPS } from '../src/data/crops';
 import { emptyPlot } from '../src/save/save';
 
 const T0 = 1_700_000_000_000;
 const rose = cropById('mawar')!;
+
+describe('crop catalogue', () => {
+  it('defines a broad, well-formed garden', () => {
+    expect(CROPS.length).toBeGreaterThanOrEqual(10);
+
+    const kinds = new Set(CROPS.map((crop) => crop.kind));
+    expect(kinds).toEqual(new Set(['flower', 'vegetable', 'fruit']));
+
+    const ids = new Set(CROPS.map((crop) => crop.id));
+    expect(ids.size).toBe(CROPS.length);
+
+    for (const crop of CROPS) {
+      expect(crop.growSeconds).toBeGreaterThan(0);
+      expect(crop.stages).toBeGreaterThanOrEqual(2);
+      expect(crop.seedCost).toBeGreaterThan(0);
+      expect(crop.sellPrice).toBeGreaterThanOrEqual(crop.seedCost);
+      expect(crop.leafColor).toBeGreaterThan(0);
+      expect(crop.bloomColor).toBeGreaterThan(0);
+    }
+  });
+
+  it('resolves every catalogued crop by id', () => {
+    for (const crop of CROPS) {
+      expect(cropById(crop.id)).toBe(crop);
+    }
+  });
+});
 
 describe('planting', () => {
   it('plants into empty soil and refuses occupied soil', () => {

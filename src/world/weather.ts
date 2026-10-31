@@ -39,12 +39,14 @@ export class PetalWeather {
   private readonly positions: Float32Array;
   private readonly spins: Float32Array;
   private readonly count: number;
-  private readonly area = 22;
-  private readonly height = 12;
+    private readonly area: number;
+    private readonly height: number;
 
-  constructor(scene: THREE.Scene, count = 90) {
+  constructor(scene: THREE.Scene, count = 90, area = 22) {
     this.count = count;
-    this.positions = new Float32Array(count * 3);
+      this.area = area;
+      this.height = area > 30 ? 18 : 12;
+      this.positions = new Float32Array(count * 3);
     this.spins = new Float32Array(count);
     const sizes = new Float32Array(count);
     const opacity = new Float32Array(count);

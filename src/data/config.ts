@@ -63,10 +63,10 @@ export const LOVE = {
 } as const;
 
 export const ISLAND = {
-  radius: 14.2,
-  walkRadius: 13.4,
+  radius: 34,
+  walkRadius: 33,
   groundY: 1.05,
-  dayLengthSeconds: 300,
+  dayLengthSeconds: 420,
   startTime: 0.2
 } as const;
 

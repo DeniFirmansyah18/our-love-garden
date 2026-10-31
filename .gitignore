@@ -8,3 +8,6 @@ coverage
 # Foto referensi pribadi, sengaja tidak masuk repo
 bubu.jpg
 dudu.jpg
+public/photos/*.jpg
+public/photos/*.jpeg
+public/photos/*.png

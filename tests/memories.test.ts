@@ -20,8 +20,12 @@ describe('memory chests', () => {
       expect(memory.letter.id.length).toBeGreaterThan(20);
       expect(memory.letter.en.length).toBeGreaterThan(20);
       expect(memory.hint.id.length).toBeGreaterThan(4);
-      expect(memory.position.x).toBeGreaterThan(-14);
-      expect(memory.position.z).toBeGreaterThan(-14);
+      expect(memory.position.x).toBeGreaterThan(-33);
+            expect(memory.position.x).toBeLessThan(33);
+            expect(memory.position.z).toBeGreaterThan(-33);
+            expect(memory.position.z).toBeLessThan(33);
+            expect(Math.hypot(memory.position.x, memory.position.z)).toBeLessThan(33);
+            expect(Math.hypot(memory.position.x - 0, memory.position.z + 16)).toBeGreaterThan(7.4);
     }
   });
 

@@ -116,6 +116,36 @@ describe('save round trip', () => {
       expect(progress.memories).toEqual([]);
       expect(progress.finaleSeen).toBe(false);
       expect(progress.birthdaySeen).toEqual([]);
+      expect(progress.visitedZones).toEqual(['garden', 'home']);
+      expect(progress.discoveredSpots).toEqual([]);
+    });
+
+    it('keeps exploration progress and repairs unknown ids', () => {
+      const storage = memoryStorage();
+      const state = defaultSave();
+      state.progress.visitedZones = ['garden', 'home', 'lake'];
+      state.progress.discoveredSpots = ['garden-lamp'];
+      writeSave(state, storage);
+
+      const loaded = loadSave(storage, {
+        knownIds: {
+          crops: [],
+          fish: [],
+          animals: [],
+          zones: ['garden', 'home', 'lake', 'cave'],
+          spots: ['garden-lamp', 'bench-romantic']
+        }
+      });
+      expect(loaded.progress.visitedZones).toEqual(['garden', 'home', 'lake']);
+      expect(loaded.progress.discoveredSpots).toEqual(['garden-lamp']);
+
+      const dirty = sanitizeSave(
+        { progress: { visitedZones: ['garden', 'mars', 7], discoveredSpots: ['spot-hantu'] } },
+        Date.now(),
+        { crops: [], fish: [], animals: [], zones: ['garden', 'home'], spots: [] }
+      );
+      expect(dirty.progress.visitedZones).toEqual(['garden']);
+      expect(dirty.progress.discoveredSpots).toEqual([]);
     });
 
     it('keeps memory progress and birthday flags', () => {

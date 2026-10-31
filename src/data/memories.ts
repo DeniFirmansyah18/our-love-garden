@@ -25,9 +25,9 @@ export const MEMORIES: MemoryChest[] = [
   {
     id: 'awal',
     index: 1,
-    position: { x: -9.5, z: 3.0 },
+    position: { x: 12.6, z: 5.4 },
     title: { id: 'Pertama kali', en: 'The first time' },
-    hint: { id: 'Dekat bangku di sisi barat pulau.', en: 'Near the bench on the west side.' },
+        hint: { id: 'Di taman bunga, dekat kincir angin.', en: 'In the flower garden, near the windmill.' },
     letter: {
       id: 'Aku masih ingat waktu itu aku deg-degan cuma buat nyapa kamu. Sekarang aku deg-degan tiap kamu ketawa. Lucu ya, rasa yang sama, beda alasan.',
       en: 'I still remember being nervous just to say hi to you. Now I get nervous every time you laugh. Funny how it is the same feeling with a different reason.'
@@ -37,9 +37,9 @@ export const MEMORIES: MemoryChest[] = [
   {
     id: 'hujan',
     index: 2,
-    position: { x: -4.2, z: 6.8 },
+    position: { x: -14.2, z: -1.6 },
     title: { id: 'Hujan kecil', en: 'A little rain' },
-    hint: { id: 'Di balik pohon utara.', en: 'Behind the northern trees.' },
+        hint: { id: 'Di samping rumah kecil kita.', en: 'Beside our little house.' },
     letter: {
       id: 'Waktu hujan, kita cuma diam dan dengerin. Katanya diam itu awkward, tapi sama kamu diamnya kayak peluk yang nggak perlu tangan.',
       en: 'When it rained we just sat and listened. People say silence is awkward, but with you it feels like a hug that needs no arms.'
@@ -49,9 +49,9 @@ export const MEMORIES: MemoryChest[] = [
   {
     id: 'makan',
     index: 3,
-    position: { x: 1.2, z: 8.6 },
+    position: { x: -14.2, z: 8.6 },
     title: { id: 'Kamu selalu lapar', en: 'You are always hungry' },
-    hint: { id: 'Di ujung jalan setapak selatan.', en: 'At the end of the south path.' },
+        hint: { id: 'Di hutan kunang-kunang, dekat tikar piknik.', en: 'In the firefly forest, near the picnic blanket.' },
     letter: {
       id: 'Kita pesan dua menu, tapi yang habis menu kamu dan setengah menu aku. Aku nggak pernah protes, karena lihat kamu makan itu hiburan tersendiri.',
       en: 'We ordered two meals, but yours disappeared and half of mine too. I never complain; watching you eat is its own entertainment.'
@@ -62,9 +62,9 @@ export const MEMORIES: MemoryChest[] = [
   {
     id: 'miring',
     index: 4,
-    position: { x: 7.6, z: 6.2 },
+    position: { x: 14.6, z: 16.6 },
     title: { id: 'Rumah miring', en: 'The crooked house' },
-    hint: { id: 'Di timur taman bunga.', en: 'East of the flower garden.' },
+        hint: { id: 'Di bukit angin, dekat layang-layang.', en: 'On the windy hill, near the kite.' },
     letter: {
       id: 'Rumah ini sengaja aku bikin miring sedikit. Supaya kalau kamu bilang "ini aneh", aku bisa jawab "iya, kayak kita, tapi tetap berdiri".',
       en: 'I built this house slightly crooked on purpose. So when you say "this is odd", I can answer "yes, like us, and still standing".'
@@ -74,9 +74,9 @@ export const MEMORIES: MemoryChest[] = [
   {
     id: 'malu',
     index: 5,
-    position: { x: 9.8, z: -1.8 },
+    position: { x: 26.4, z: 1.2 },
     title: { id: 'Malu-malu', en: 'Shy shy' },
-    hint: { id: 'Di sisi timur pulau, dekat pohon besar.', en: 'East side, near the big tree.' },
+        hint: { id: 'Di pantai pasir pink, dekat tulisan nama.', en: 'On the pink sand beach, near the names.' },
     letter: {
       id: 'Kamu tahu nggak, aku sering pura-pura lihat awan padahal ngeliatin kamu dari ekor mata. Kalau ketahuan, aku langsung benerin topi. Itu modus.',
       en: 'Did you know I often pretend to watch the clouds while watching you from the corner of my eye? If caught, I fix my hat. That is the plan.'
@@ -87,9 +87,9 @@ export const MEMORIES: MemoryChest[] = [
   {
     id: 'kolam',
     index: 6,
-    position: { x: 0.4, z: -7.4 },
+    position: { x: -4.6, z: -9.4 },
     title: { id: 'Kolam kita', en: 'Our pond' },
-    hint: { id: 'Di selatan kolam, dekat batu besar.', en: 'South of the pond, near the big rock.' },
+        hint: { id: 'Di tepi Danau Cinta, dekat dermaga.', en: 'On the shore of Love Lake, near the dock.' },
     letter: {
       id: 'Aku kasih nama ikanmu Jamal, soalnya kamu ketawa waktu itu dan aku pengen ketawa itu kedengeran tiap kali aku ke kolam.',
       en: 'I named the fish Jamal because you laughed then, and I wanted that laugh to be there every time I visit the pond.'
@@ -99,9 +99,9 @@ export const MEMORIES: MemoryChest[] = [
   {
     id: 'pulang',
     index: 7,
-    position: { x: -8.6, z: -6.4 },
+    position: { x: -21.4, z: -16.2 },
     title: { id: 'Selalu pulang', en: 'Always coming home' },
-    hint: { id: 'Di belakang rumah kecil kita.', en: 'Behind our little house.' },
+        hint: { id: 'Di dalam Gua Kristal, di balik batu barat laut.', en: 'Inside the Crystal Cave, behind the northwest rocks.' },
     letter: {
       id: 'Kata orang, rumah itu tempat. Buat aku, rumah itu kamu. Makanya pulang ke mana pun, ujungnya ya cari kamu.',
       en: 'People say home is a place. For me, home is you. So wherever I go back to, it always ends with finding you.'

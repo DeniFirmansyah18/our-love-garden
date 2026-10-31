@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_SOUND, clampVolume, sanitizeSound } from '../src/audio/settings';
-import { defaultSave, loadSave, sanitizeSave, writeSave, type StorageLike } from '../src/save/save';
+import { SAVE_VERSION, defaultSave, loadSave, sanitizeSave, writeSave, type StorageLike } from '../src/save/save';
 
 function memoryStorage(): StorageLike & { data: Map<string, string> } {
   const data = new Map<string, string>();
@@ -54,10 +54,10 @@ describe('save with sound', () => {
   it('starts with music and effects on, volume at 0.6', () => {
     const save = defaultSave();
     expect(save.sound).toEqual(DEFAULT_SOUND);
-    expect(save.version).toBe(4);
+      expect(save.version).toBe(SAVE_VERSION);
   });
 
-  it('upgrades a version 3 save that has no sound block', () => {
+    it('upgrades a version 3 save that has no sound block or zones', () => {
     const legacy = {
       version: 3,
       lang: 'en',
@@ -70,7 +70,31 @@ describe('save with sound', () => {
     expect(save.lang).toBe('en');
     expect(save.quality).toBe('sharp');
     expect(save.progress.coins).toBe(12);
-  });
+      expect(save.progress.visitedZones).toEqual(['garden', 'home']);
+    });
+
+    it('upgrades a version 4 save that already has progress but no zones', () => {
+      const legacy = {
+        version: 4,
+        lang: 'id',
+        quality: 'auto',
+        sound: { volume: 0.3, music: false, sfx: true },
+        progress: {
+          coins: 240,
+          plots: [],
+          inventory: { mawar: 2 },
+          collection: { fish: ['jamal'], crops: ['mawar'], animals: ['cimoy'] },
+          memories: ['awal']
+        }
+      };
+      const save = sanitizeSave(legacy);
+      expect(save.progress.coins).toBe(240);
+      expect(save.progress.inventory).toEqual({ mawar: 2 });
+      expect(save.progress.memories).toEqual(['awal']);
+      expect(save.sound.volume).toBe(0.3);
+      expect(save.progress.visitedZones).toEqual(['garden', 'home']);
+      expect(save.progress.discoveredSpots).toEqual([]);
+    });
 
   it('round trips volume and toggles', () => {
     const storage = memoryStorage();
